@@ -1,0 +1,1982 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADM Guru Mata Pelajaran 2026 - MTsN 1 Kota Lhokseumawe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        primary: { 50:'#ecfdf5',100:'#d1fae5',200:'#a7f3d0',300:'#6ee7b7',400:'#34d399',500:'#10b981',600:'#059669',700:'#047857',800:'#065f46',900:'#064e3b' },
+                        slate: { 750:'#293548' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .page { display: none; }
+        .page.active { display: block; }
+        .sidebar-link.active { background: linear-gradient(135deg, #059669, #10b981); color: white; box-shadow: 0 4px 15px rgba(16,185,129,0.3); }
+        .sidebar-link:hover:not(.active) { background: rgba(16,185,129,0.1); }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .toast { animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+        .modal-overlay { background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); }
+        .toggle-btn { width: 48px; height: 48px; min-width: 48px; min-height: 48px; }
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white !important; }
+        }
+        .print-only { display: none; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #10b981; border-radius: 3px; }
+        input[type="radio"]:checked + label { border-color: #10b981; background: #ecfdf5; }
+        .stat-card { transition: transform 0.2s, box-shadow 0.2s; }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen">
+
+<!-- Toast Container -->
+<div id="toastContainer" class="fixed top-4 right-4 z-[9999] flex flex-col gap-2"></div>
+
+<!-- Modal Overlay -->
+<div id="modalOverlay" class="modal-overlay fixed inset-0 z-[999] hidden items-center justify-center p-4">
+    <div id="modalContent" class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 fade-in"></div>
+</div>
+
+<!-- Mobile Sidebar Overlay -->
+<div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
+
+<!-- App Container -->
+<div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-72 bg-white shadow-xl transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col no-print">
+        <div class="p-6 border-b border-slate-100">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center shadow-lg">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                </div>
+                <div>
+                    <h1 class="font-bold text-slate-800 text-sm leading-tight">ADM Guru Mapel</h1>
+                    <p class="text-xs text-slate-500">MTsN 1 Lhokseumawe</p>
+                </div>
+            </div>
+        </div>
+        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+            <a href="#" onclick="showPage('dashboard')" class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200" data-page="dashboard">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                Dashboard
+            </a>
+            <a href="#" onclick="showPage('students')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 transition-all duration-200" data-page="students">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/></svg>
+                Data Siswa
+            </a>
+            <a href="#" onclick="showPage('attendance')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 transition-all duration-200" data-page="attendance">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                Kehadiran
+            </a>
+            <a href="#" onclick="showPage('grades')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 transition-all duration-200" data-page="grades">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                Nilai Akademik
+            </a>
+            <a href="#" onclick="showPage('behavior')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 transition-all duration-200" data-page="behavior">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                Jurnal & Konseling
+            </a>
+            <a href="#" onclick="showPage('settings')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 transition-all duration-200" data-page="settings">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                Pengaturan
+            </a>
+            <a href="#" onclick="showPage('export')" class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 transition-all duration-200" data-page="export">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                Ekspor & Laporan
+            </a>
+        </nav>
+        <div class="p-4 border-t border-slate-100">
+            <div class="bg-primary-50 rounded-xl p-3">
+                <p class="text-xs text-primary-700 font-medium">Tahun Ajaran 2025/2026</p>
+                <p class="text-xs text-primary-600">Semester Genap</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 min-w-0">
+        <!-- Top Bar -->
+        <header class="bg-white shadow-sm sticky top-0 z-30 no-print">
+            <div class="flex items-center justify-between px-4 lg:px-8 py-4">
+                <div class="flex items-center gap-3">
+                    <button onclick="toggleSidebar()" class="lg:hidden toggle-btn flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 transition">
+                        <svg class="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+                    <div>
+                        <h2 id="pageTitle" class="text-lg font-bold text-slate-800">Dashboard</h2>
+                        <p id="pageSubtitle" class="text-xs text-slate-500">Ringkasan data kelas hari ini</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div id="syncStatus" class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 text-xs font-medium text-slate-600">
+                        <span class="w-2 h-2 rounded-full bg-primary-500 animate-pulse"></span>
+                        <span>Offline Mode</span>
+                    </div>
+                    <button onclick="window.print()" class="toggle-btn flex items-center justify-center rounded-xl bg-primary-50 hover:bg-primary-100 transition" title="Cetak">
+                        <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content Container -->
+        <div class="p-4 lg:p-8">
+
+            <!-- ============ DASHBOARD ============ -->
+            <div id="page-dashboard" class="page active fade-in">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <div class="stat-card bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197"/></svg>
+                            </div>
+                            <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full">Total</span>
+                        </div>
+                        <p id="statTotalStudents" class="text-2xl font-bold text-slate-800">0</p>
+                        <p class="text-xs text-slate-500 mt-1">Jumlah Siswa</p>
+                    </div>
+                    <div class="stat-card bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                            <span class="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">Hari Ini</span>
+                        </div>
+                        <p id="statAttendance" class="text-2xl font-bold text-slate-800">0%</p>
+                        <p class="text-xs text-slate-500 mt-1">Kehadiran</p>
+                    </div>
+                    <div class="stat-card bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                            </div>
+                            <span class="text-xs font-medium text-purple-600 bg-purple-50 px-2 py-1 rounded-full">Rata-rata</span>
+                        </div>
+                        <p id="statAvgGrade" class="text-2xl font-bold text-slate-800">0</p>
+                        <p class="text-xs text-slate-500 mt-1">Rata-rata Nilai</p>
+                    </div>
+                    <div class="stat-card bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
+                                <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                            </div>
+                            <span class="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-1 rounded-full">Aktif</span>
+                        </div>
+                        <p id="statActiveCases" class="text-2xl font-bold text-slate-800">0</p>
+                        <p class="text-xs text-slate-500 mt-1">Catatan Kasus</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                        <h3 class="font-semibold text-slate-800 mb-4">Tren Kehadiran Mingguan</h3>
+                        <canvas id="chartAttendance" height="200"></canvas>
+                    </div>
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                        <h3 class="font-semibold text-slate-800 mb-4">Distribusi Nilai</h3>
+                        <canvas id="chartGrades" height="200"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                    <h3 class="font-semibold text-slate-800 mb-4">📋 Pengumuman & Agenda Terdekat</h3>
+                    <div id="announcementsList" class="space-y-3">
+                        <p class="text-sm text-slate-500 italic">Belum ada pengumuman. Tambahkan di menu Pengaturan.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ DATA SISWA ============ -->
+            <div id="page-students" class="page fade-in">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="p-4 lg:p-6 border-b border-slate-100">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div class="flex-1 flex flex-col sm:flex-row gap-3">
+                                <div class="relative flex-1">
+                                    <svg class="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                    <input type="text" id="searchStudent" oninput="renderStudents()" placeholder="Cari siswa..." class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none">
+                                </div>
+                                <select id="filterGender" onchange="renderStudents()" class="px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                                    <option value="">Semua Gender</option>
+                                    <option value="L">Laki-laki</option>
+                                    <option value="P">Perempuan</option>
+                                </select>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="showImportModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-medium transition flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                                    Import
+                                </button>
+                                <button onclick="showStudentForm()" class="px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-sm font-medium transition flex items-center gap-2 shadow-lg shadow-primary-200">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                    Tambah Siswa
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">No</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase cursor-pointer hover:text-primary-600" onclick="sortStudents('name')">Nama Siswa ↕</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">NIS</th>
+                                    <th class="px-4 py-3 text-center text-xs font-semibold text-slate-500 uppercase cursor-pointer hover:text-primary-600" onclick="sortStudents('gender')">L/P ↕</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Orang Tua</th>
+                                    <th class="px-4 py-3 text-center text-xs font-semibold text-slate-500 uppercase">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentsTableBody" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                    <div id="studentsEmpty" class="hidden p-12 text-center">
+                        <svg class="w-16 h-16 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197"/></svg>
+                        <p class="text-slate-500 font-medium">Belum ada data siswa</p>
+                        <p class="text-sm text-slate-400 mt-1">Klik "Tambah Siswa" untuk memulai</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ KEHADIRAN ============ -->
+            <div id="page-attendance" class="page fade-in">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="p-4 lg:p-6 border-b border-slate-100">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div class="flex items-center gap-3">
+                                <input type="date" id="attendanceDate" class="px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                                <select id="attendanceClass" onchange="renderAttendance()" class="px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                                    <option value="">Pilih Kelas</option>
+                                </select>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="markAllPresent()" class="px-4 py-2.5 bg-green-50 hover:bg-green-100 text-green-700 rounded-xl text-sm font-medium transition">✓ Semua Hadir</button>
+                                <button onclick="saveAttendance()" class="px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-sm font-medium transition shadow-lg shadow-primary-200">💾 Simpan</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="attendanceList" class="divide-y divide-slate-100"></div>
+                    <div id="attendanceEmpty" class="hidden p-12 text-center">
+                        <p class="text-slate-500">Tambahkan data siswa terlebih dahulu</p>
+                    </div>
+                </div>
+
+                <!-- Rekap Bulanan -->
+                <div class="mt-6 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="p-4 lg:p-6 border-b border-slate-100">
+                        <h3 class="font-semibold text-slate-800">📊 Rekap Kehadiran Bulanan</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Nama Siswa</th>
+                                    <th class="px-4 py-3 text-center text-xs font-semibold text-green-600 uppercase">Hadir</th>
+                                    <th class="px-4 py-3 text-center text-xs font-semibold text-yellow-600 uppercase">Sakit</th>
+                                    <th class="px-4 py-3 text-center text-xs font-semibold text-blue-600 uppercase">Izin</th>
+                                    <th class="px-4 py-3 text-center text-xs font-semibold text-red-600 uppercase">Alpa</th>
+                                    <th class="px-4 py-3 text-center text-xs font-semibold text-slate-500 uppercase">% Kehadiran</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendanceRecapBody" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ NILAI AKADEMIK ============ -->
+            <div id="page-grades" class="page fade-in">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="p-4 lg:p-6 border-b border-slate-100">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div class="flex items-center gap-3">
+                                <select id="gradeStudent" onchange="renderGrades()" class="px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                                    <option value="">Pilih Siswa</option>
+                                </select>
+                            </div>
+                            <button onclick="saveGrades()" class="px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-sm font-medium transition shadow-lg shadow-primary-200">💾 Simpan Nilai</button>
+                        </div>
+                    </div>
+                    <div id="gradesList" class="p-4 lg:p-6"></div>
+                    <div id="gradesEmpty" class="hidden p-12 text-center">
+                        <p class="text-slate-500">Pilih siswa untuk menginput nilai</p>
+                    </div>
+                </div>
+
+                <!-- Tabel Rekap Nilai -->
+                <div class="mt-6 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="p-4 lg:p-6 border-b border-slate-100">
+                        <h3 class="font-semibold text-slate-800">📋 Rekap Nilai Seluruh Siswa</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase">Nama Siswa</th>
+                                    <th class="px-4 py-3 text-center text-xs font-semibold text-slate-500 uppercase">Tugas</th>
+                                    <th class="px-4 py-3 text-center text-xs font-semibold text-slate-500 uppercase">UTS</th>
+                                    <th class="px-4 py-3 text-center text-xs font-semibold text-slate-500 uppercase">UAS</th>
+                                    <th class="px-4 py-3 text-center text-xs font-semibold text-slate-500 uppercase">Nilai Akhir</th>
+                                    <th class="px-4 py-3 text-center text-xs font-semibold text-slate-500 uppercase">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gradesRecapBody" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ JURNAL & KONSELING ============ -->
+            <div id="page-behavior" class="page fade-in">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="p-4 lg:p-6 border-b border-slate-100">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div class="flex items-center gap-3">
+                                <select id="behaviorFilter" onchange="renderBehavior()" class="px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                                    <option value="">Semua Kategori</option>
+                                    <option value="prestasi">Prestasi</option>
+                                    <option value="pelanggaran">Pelanggaran</option>
+                                </select>
+                                <select id="behaviorLevel" onchange="renderBehavior()" class="px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                                    <option value="">Semua Tingkat</option>
+                                    <option value="Ringan">Ringan</option>
+                                    <option value="Sedang">Sedang</option>
+                                    <option value="Berat">Berat</option>
+                                </select>
+                            </div>
+                            <button onclick="showBehaviorForm()" class="px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-sm font-medium transition shadow-lg shadow-primary-200 flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                Tambah Catatan
+                            </button>
+                        </div>
+                    </div>
+                    <div id="behaviorList" class="divide-y divide-slate-100"></div>
+                    <div id="behaviorEmpty" class="hidden p-12 text-center">
+                        <p class="text-slate-500">Belum ada catatan perilaku</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============ PENGATURAN ============ -->
+            <div id="page-settings" class="page fade-in">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Identitas Kelas -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                        <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                            Identitas Kelas & Mapel
+                        </h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Nama Kelas</label>
+                                <input type="text" id="setClassName" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none" placeholder="Contoh: VII-A">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Guru Mata Pelajaran</label>
+                                <input type="text" id="setTeacherName" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none" placeholder="Nama lengkap guru">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">NIP</label>
+                                <input type="text" id="setTeacherNIP" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none" placeholder="NIP guru">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Mata Pelajaran</label>
+                                <input type="text" id="setSubject" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none" placeholder="Contoh: Matematika">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Tahun Ajaran</label>
+                                    <input type="text" id="setAcademicYear" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none" placeholder="2025/2026">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Semester</label>
+                                    <select id="setSemester" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                                        <option value="Ganjil">Ganjil</option>
+                                        <option value="Genap">Genap</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">KKM (Kriteria Ketuntasan Minimum)</label>
+                                <input type="number" id="setKKM" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none" placeholder="75" min="0" max="100">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Identitas Madrasah -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                        <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"/></svg>
+                            Identitas Madrasah
+                        </h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Nama Kepala Madrasah</label>
+                                <input type="text" id="setHeadName" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none" placeholder="Nama kepala madrasah">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">NIP Kepala Madrasah</label>
+                                <input type="text" id="setHeadNIP" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none" placeholder="NIP kepala madrasah">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Alamat Madrasah</label>
+                                <textarea id="setAddress" rows="2" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none resize-none" placeholder="Alamat lengkap madrasah"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bobot Nilai -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                        <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                            Bobot Penilaian
+                        </h3>
+                        <p class="text-xs text-slate-500 mb-4">Total bobot harus 100%</p>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Bobot Tugas (%)</label>
+                                <input type="number" id="setWeightTask" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none" placeholder="40" min="0" max="100">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Bobot UTS (%)</label>
+                                <input type="number" id="setWeightUTS" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none" placeholder="30" min="0" max="100">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Bobot UAS (%)</label>
+                                <input type="number" id="setWeightUAS" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none" placeholder="30" min="0" max="100">
+                            </div>
+                            <div id="weightTotal" class="text-sm font-medium text-slate-600 bg-slate-50 rounded-xl p-3 text-center"></div>
+                        </div>
+                    </div>
+
+                    <!-- Google Sheets Integration -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                        <h3 class="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                            Integrasi Google Sheets
+                        </h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Web App URL (Google Apps Script)</label>
+                                <input type="url" id="setWebAppURL" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none" placeholder="https://script.google.com/macros/s/...">
+                                <p class="text-xs text-slate-400 mt-1">Salin URL dari Google Apps Script Web App Anda</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="syncToGoogleSheets()" class="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium transition flex items-center justify-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                    Sinkronisasi Sekarang
+                                </button>
+                            </div>
+                            <div id="syncResult" class="hidden text-sm p-3 rounded-xl"></div>
+                            <details class="bg-slate-50 rounded-xl p-4">
+                                <summary class="text-sm font-medium text-slate-700 cursor-pointer">📖 Panduan Setup Google Apps Script</summary>
+                                <div class="mt-3 text-xs text-slate-600 space-y-2">
+                                    <p><strong>Langkah-langkah:</strong></p>
+                                    <ol class="list-decimal list-inside space-y-1">
+                                        <li>Buka <a href="https://script.google.com" target="_blank" class="text-primary-600 underline">script.google.com</a></li>
+                                        <li>Buat project baru</li>
+                                        <li>Salin kode berikut ke editor:</li>
+                                    </ol>
+                                    <pre class="bg-slate-800 text-green-300 p-3 rounded-lg overflow-x-auto text-[10px] leading-relaxed">function doPost(e) {
+  var data = JSON.parse(e.postData.contents);
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(data.sheet) || ss.insertSheet(data.sheet);
+  
+  if (data.action === 'overwrite') {
+    sheet.clear();
+    if (data.headers) {
+      sheet.appendRow(data.headers);
+    }
+    data.rows.forEach(function(row) {
+      sheet.appendRow(row);
+    });
+  }
+  
+  return ContentService
+    .createTextOutput(JSON.stringify({status:'ok'}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doGet(e) {
+  return ContentService
+    .createTextOutput(JSON.stringify({status:'running'}))
+    .setMimeType(ContentService.MimeType.JSON);
+}</pre>
+                                    <ol start="4" class="list-decimal list-inside space-y-1">
+                                        <li>Deploy → New Deployment → Web App</li>
+                                        <li>Set "Execute as: Me" dan "Who has access: Anyone"</li>
+                                        <li>Salin URL Web App ke kolom di atas</li>
+                                    </ol>
+                                </div>
+                            </details>
+                        </div>
+                    </div>
+
+                    <!-- Pengumuman -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 lg:col-span-2">
+                        <h3 class="font-semibold text-slate-800 mb-4">📢 Pengumuman & Agenda</h3>
+                        <div class="flex gap-2 mb-4">
+                            <input type="text" id="newAnnouncement" class="flex-1 px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none" placeholder="Tulis pengumuman baru...">
+                            <button onclick="addAnnouncement()" class="px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-sm font-medium transition">Tambah</button>
+                        </div>
+                        <div id="settingsAnnouncements" class="space-y-2"></div>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex justify-end">
+                    <button onclick="saveSettings()" class="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-sm font-medium transition shadow-lg shadow-primary-200 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        Simpan Semua Pengaturan
+                    </button>
+                </div>
+            </div>
+
+            <!-- ============ EKSPOR & LAPORAN ============ -->
+            <div id="page-export" class="page fade-in">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 text-center">
+                        <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        </div>
+                        <h3 class="font-semibold text-slate-800 mb-2">Ekspor Data Siswa</h3>
+                        <p class="text-sm text-slate-500 mb-4">Download database siswa dalam format Excel</p>
+                        <button onclick="exportStudentsExcel()" class="w-full px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-medium transition">📥 Download Excel</button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 text-center">
+                        <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        </div>
+                        <h3 class="font-semibold text-slate-800 mb-2">Ekspor Kehadiran</h3>
+                        <p class="text-sm text-slate-500 mb-4">Download rekap kehadiran bulanan</p>
+                        <button onclick="exportAttendanceExcel()" class="w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-medium transition">📥 Download Excel</button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 text-center">
+                        <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        </div>
+                        <h3 class="font-semibold text-slate-800 mb-2">Ekspor Nilai</h3>
+                        <p class="text-sm text-slate-500 mb-4">Download rekap nilai seluruh siswa</p>
+                        <button onclick="exportGradesExcel()" class="w-full px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-sm font-medium transition">📥 Download Excel</button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 text-center">
+                        <div class="w-16 h-16 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        </div>
+                        <h3 class="font-semibold text-slate-800 mb-2">Ekspor CSV</h3>
+                        <p class="text-sm text-slate-500 mb-4">Download semua data dalam format CSV</p>
+                        <button onclick="exportAllCSV()" class="w-full px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-sm font-medium transition">📥 Download CSV</button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 text-center">
+                        <div class="w-16 h-16 bg-rose-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                        </div>
+                        <h3 class="font-semibold text-slate-800 mb-2">Cetak Rapor Bayangan</h3>
+                        <p class="text-sm text-slate-500 mb-4">Cetak ringkasan per siswa (PDF/Print)</p>
+                        <button onclick="showPrintReportModal()" class="w-full px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-sm font-medium transition">🖨️ Pilih Siswa & Cetak</button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 text-center">
+                        <div class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>
+                        </div>
+                        <h3 class="font-semibold text-slate-800 mb-2">Backup Data</h3>
+                        <p class="text-sm text-slate-500 mb-4">Download seluruh data aplikasi sebagai JSON</p>
+                        <button onclick="backupData()" class="w-full px-4 py-2.5 bg-slate-600 hover:bg-slate-700 text-white rounded-xl text-sm font-medium transition">💾 Backup JSON</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<!-- Print Report Template (Hidden) -->
+<div id="printReport" class="print-only p-8">
+    <div id="printReportContent"></div>
+</div>
+
+<script>
+/**
+ * ============================================================================
+ * APLIKASI ADM GURU MATA PELAJARAN 2026
+ * MTsN 1 Kota Lhokseumawe
+ * ============================================================================
+ * 
+ * PANDUAN GOOGLE APPS SCRIPT SETUP:
+ * 1. Buka https://script.google.com
+ * 2. Buat project baru
+ * 3. Paste kode berikut:
+ * 
+ *    function doPost(e) {
+ *      var data = JSON.parse(e.postData.contents);
+ *      var ss = SpreadsheetApp.getActiveSpreadsheet();
+ *      var sheet = ss.getSheetByName(data.sheet) || ss.insertSheet(data.sheet);
+ *      if (data.action === 'overwrite') {
+ *        sheet.clear();
+ *        if (data.headers) sheet.appendRow(data.headers);
+ *        data.rows.forEach(function(row) { sheet.appendRow(row); });
+ *      }
+ *      return ContentService.createTextOutput(JSON.stringify({status:'ok'}))
+ *        .setMimeType(ContentService.MimeType.JSON);
+ *    }
+ *    function doGet(e) {
+ *      return ContentService.createTextOutput(JSON.stringify({status:'running'}))
+ *        .setMimeType(ContentService.MimeType.JSON);
+ *    }
+ * 
+ * 4. Deploy → New Deployment → Type: Web App
+ * 5. Execute as: Me, Who has access: Anyone
+ * 6. Copy the Web App URL
+ * 7. Paste URL di menu Pengaturan aplikasi ini
+ * 
+ * ============================================================================
+ */
+
+// ==================== DATA STORE ====================
+const DB = {
+    students: [],
+    attendance: {},    // { 'YYYY-MM-DD': { studentId: 'H/S/I/A' } }
+    grades: {},        // { studentId: { tugas: 0, uts: 0, uas: 0 } }
+    behavior: [],      // [{ id, studentId, date, category, level, description, status }]
+    settings: {
+        className: '',
+        teacherName: '',
+        teacherNIP: '',
+        subject: '',
+        academicYear: '2025/2026',
+        semester: 'Genap',
+        kkm: 75,
+        headName: '',
+        headNIP: '',
+        address: '',
+        weightTask: 40,
+        weightUTS: 30,
+        weightUAS: 30,
+        webAppURL: '',
+        announcements: []
+    }
+};
+
+let sortField = 'name';
+let sortDir = 1;
+
+// ==================== INITIALIZATION ====================
+function init() {
+    loadData();
+    setTodayDate();
+    renderAll();
+    updateDashboard();
+    initCharts();
+    updateSyncStatus();
+}
+
+function loadData() {
+    const saved = localStorage.getItem('admGuru2026');
+    if (saved) {
+        const parsed = JSON.parse(saved);
+        Object.assign(DB, parsed);
+        // Ensure settings has all keys
+        DB.settings = { ...{ className:'', teacherName:'', teacherNIP:'', subject:'', academicYear:'2025/2026', semester:'Genap', kkm:75, headName:'', headNIP:'', address:'', weightTask:40, weightUTS:30, weightUAS:30, webAppURL:'', announcements:[] }, ...DB.settings };
+    }
+}
+
+function saveData() {
+    localStorage.setItem('admGuru2026', JSON.stringify(DB));
+}
+
+function setTodayDate() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('attendanceDate').value = today;
+}
+
+// ==================== NAVIGATION ====================
+function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + pageId).classList.add('active');
+    
+    document.querySelectorAll('.sidebar-link').forEach(l => {
+        l.classList.remove('active');
+        l.classList.add('text-slate-600');
+    });
+    const activeLink = document.querySelector(`[data-page="${pageId}"]`);
+    if (activeLink) {
+        activeLink.classList.add('active');
+        activeLink.classList.remove('text-slate-600');
+    }
+
+    const titles = {
+        dashboard: ['Dashboard', 'Ringkasan data kelas hari ini'],
+        students: ['Data Induk Siswa', 'Kelola database siswa'],
+        attendance: ['Pencatatan Kehadiran', 'Absensi harian siswa'],
+        grades: ['Nilai Akademik', 'Input dan kelola nilai siswa'],
+        behavior: ['Jurnal & Konseling', 'Catatan perilaku siswa'],
+        settings: ['Pengaturan', 'Konfigurasi aplikasi'],
+        export: ['Ekspor & Laporan', 'Download dan cetak data']
+    };
+    document.getElementById('pageTitle').textContent = titles[pageId]?.[0] || '';
+    document.getElementById('pageSubtitle').textContent = titles[pageId]?.[1] || '';
+
+    // Close mobile sidebar
+    if (window.innerWidth < 1024) toggleSidebar(false);
+    renderAll();
+}
+
+function toggleSidebar(show) {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const isOpen = !sidebar.classList.contains('-translate-x-full');
+    
+    if (show === false || (show === undefined && isOpen)) {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+    } else {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+    }
+}
+
+// ==================== TOAST NOTIFICATIONS ====================
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    const colors = {
+        success: 'bg-green-500',
+        error: 'bg-red-500',
+        warning: 'bg-amber-500',
+        info: 'bg-blue-500'
+    };
+    const icons = {
+        success: '✓',
+        error: '✕',
+        warning: '⚠',
+        info: 'ℹ'
+    };
+    const toast = document.createElement('div');
+    toast.className = `toast ${colors[type]} text-white px-5 py-3 rounded-xl shadow-lg flex items-center gap-3 text-sm font-medium min-w-[280px]`;
+    toast.innerHTML = `<span class="text-lg">${icons[type]}</span><span>${message}</span>`;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+// ==================== MODAL ====================
+function showModal(content) {
+    document.getElementById('modalContent').innerHTML = content;
+    document.getElementById('modalOverlay').classList.remove('hidden');
+    document.getElementById('modalOverlay').classList.add('flex');
+}
+
+function hideModal() {
+    document.getElementById('modalOverlay').classList.add('hidden');
+    document.getElementById('modalOverlay').classList.remove('flex');
+}
+
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+    if (e.target === this) hideModal();
+});
+
+// ==================== STUDENTS MODULE ====================
+function renderStudents() {
+    const search = document.getElementById('searchStudent').value.toLowerCase();
+    const genderFilter = document.getElementById('filterGender').value;
+    
+    let filtered = DB.students.filter(s => {
+        const matchSearch = s.name.toLowerCase().includes(search) || s.nis.toLowerCase().includes(search);
+        const matchGender = !genderFilter || s.gender === genderFilter;
+        return matchSearch && matchGender;
+    });
+
+    filtered.sort((a, b) => {
+        if (sortField === 'name') return sortDir * a.name.localeCompare(b.name);
+        if (sortField === 'gender') return sortDir * a.gender.localeCompare(b.gender);
+        return 0;
+    });
+
+    const tbody = document.getElementById('studentsTableBody');
+    const empty = document.getElementById('studentsEmpty');
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+    }
+    empty.classList.add('hidden');
+
+    tbody.innerHTML = filtered.map((s, i) => `
+        <tr class="hover:bg-slate-50 transition">
+            <td class="px-4 py-3 text-sm text-slate-600">${i + 1}</td>
+            <td class="px-4 py-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full ${s.gender === 'L' ? 'bg-blue-100 text-blue-600' : 'bg-pink-100 text-pink-600'} flex items-center justify-center text-xs font-bold">
+                        ${s.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-slate-800">${s.name}</p>
+                        <p class="text-xs text-slate-400">${s.parentName || '-'}</p>
+                    </div>
+                </div>
+            </td>
+            <td class="px-4 py-3 text-sm text-slate-600">${s.nis}</td>
+            <td class="px-4 py-3 text-center">
+                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${s.gender === 'L' ? 'bg-blue-100 text-blue-700' : 'bg-pink-100 text-pink-700'}">${s.gender}</span>
+            </td>
+            <td class="px-4 py-3 text-sm text-slate-600">${s.parentName || '-'}<br><span class="text-xs text-slate-400">${s.phone || ''}</span></td>
+            <td class="px-4 py-3 text-center">
+                <div class="flex items-center justify-center gap-1">
+                    <button onclick="showStudentDetail('${s.id}')" class="p-2 hover:bg-primary-50 rounded-lg transition" title="Detail">
+                        <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                    </button>
+                    <button onclick="showStudentForm('${s.id}')" class="p-2 hover:bg-amber-50 rounded-lg transition" title="Edit">
+                        <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    </button>
+                    <button onclick="confirmDeleteStudent('${s.id}')" class="p-2 hover:bg-red-50 rounded-lg transition" title="Hapus">
+                        <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function sortStudents(field) {
+    if (sortField === field) sortDir *= -1;
+    else { sortField = field; sortDir = 1; }
+    renderStudents();
+}
+
+function showStudentForm(id) {
+    const student = id ? DB.students.find(s => s.id === id) : null;
+    const title = student ? 'Edit Data Siswa' : 'Tambah Siswa Baru';
+    
+    showModal(`
+        <h3 class="text-lg font-bold text-slate-800 mb-4">${title}</h3>
+        <form onsubmit="saveStudent(event, '${id || ''}')" class="space-y-4">
+            <div class="grid grid-cols-2 gap-3">
+                <div class="col-span-2">
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Nama Lengkap *</label>
+                    <input type="text" id="fName" required value="${student?.name || ''}" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none" placeholder="Nama lengkap siswa">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">NIS *</label>
+                    <input type="text" id="fNIS" required value="${student?.nis || ''}" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none" placeholder="Nomor Induk Siswa">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Jenis Kelamin *</label>
+                    <select id="fGender" required class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                        <option value="">Pilih</option>
+                        <option value="L" ${student?.gender === 'L' ? 'selected' : ''}>Laki-laki</option>
+                        <option value="P" ${student?.gender === 'P' ? 'selected' : ''}>Perempuan</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Tempat Lahir</label>
+                    <input type="text" id="fBirthPlace" value="${student?.birthPlace || ''}" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Tanggal Lahir</label>
+                    <input type="date" id="fBirthDate" value="${student?.birthDate || ''}" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Alamat</label>
+                    <textarea id="fAddress" rows="2" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none resize-none">${student?.address || ''}</textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Nama Orang Tua</label>
+                    <input type="text" id="fParent" value="${student?.parentName || ''}" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">No. Telepon</label>
+                    <input type="tel" id="fPhone" value="${student?.phone || ''}" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                </div>
+            </div>
+            <div class="flex gap-3 pt-2">
+                <button type="button" onclick="hideModal()" class="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-medium transition">Batal</button>
+                <button type="submit" class="flex-1 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-sm font-medium transition">Simpan</button>
+            </div>
+        </form>
+    `);
+}
+
+function saveStudent(e, id) {
+    e.preventDefault();
+    const data = {
+        name: document.getElementById('fName').value.trim(),
+        nis: document.getElementById('fNIS').value.trim(),
+        gender: document.getElementById('fGender').value,
+        birthPlace: document.getElementById('fBirthPlace').value.trim(),
+        birthDate: document.getElementById('fBirthDate').value,
+        address: document.getElementById('fAddress').value.trim(),
+        parentName: document.getElementById('fParent').value.trim(),
+        phone: document.getElementById('fPhone').value.trim()
+    };
+
+    if (id) {
+        const idx = DB.students.findIndex(s => s.id === id);
+        if (idx >= 0) DB.students[idx] = { ...DB.students[idx], ...data };
+        showToast('Data siswa berhasil diperbarui');
+    } else {
+        data.id = 'S' + Date.now();
+        DB.students.push(data);
+        showToast('Siswa baru berhasil ditambahkan');
+    }
+
+    saveData();
+    hideModal();
+    renderAll();
+    updateDashboard();
+}
+
+function confirmDeleteStudent(id) {
+    const student = DB.students.find(s => s.id === id);
+    showModal(`
+        <div class="text-center">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800 mb-2">Hapus Siswa?</h3>
+            <p class="text-sm text-slate-500 mb-6">Apakah Anda yakin ingin menghapus <strong>${student.name}</strong>? Data kehadiran dan nilai siswa ini juga akan terhapus.</p>
+            <div class="flex gap-3">
+                <button onclick="hideModal()" class="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-medium transition">Batal</button>
+                <button onclick="deleteStudent('${id}')" class="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-medium transition">Hapus</button>
+            </div>
+        </div>
+    `);
+}
+
+function deleteStudent(id) {
+    DB.students = DB.students.filter(s => s.id !== id);
+    delete DB.grades[id];
+    // Remove from attendance
+    Object.keys(DB.attendance).forEach(date => {
+        delete DB.attendance[date][id];
+    });
+    DB.behavior = DB.behavior.filter(b => b.studentId !== id);
+    saveData();
+    hideModal();
+    showToast('Siswa berhasil dihapus', 'info');
+    renderAll();
+    updateDashboard();
+}
+
+function showStudentDetail(id) {
+    const s = DB.students.find(st => st.id === id);
+    if (!s) return;
+    
+    // Get attendance stats
+    let totalH = 0, totalS = 0, totalI = 0, totalA = 0;
+    Object.values(DB.attendance).forEach(day => {
+        if (day[id] === 'H') totalH++;
+        if (day[id] === 'S') totalS++;
+        if (day[id] === 'I') totalI++;
+        if (day[id] === 'A') totalA++;
+    });
+    const totalDays = totalH + totalS + totalI + totalA;
+    const pct = totalDays > 0 ? Math.round((totalH / totalDays) * 100) : 0;
+
+    // Get grades
+    const g = DB.grades[id] || {};
+    const finalGrade = calculateFinalGrade(g);
+
+    showModal(`
+        <div class="space-y-4">
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 rounded-full ${s.gender === 'L' ? 'bg-blue-100 text-blue-600' : 'bg-pink-100 text-pink-600'} flex items-center justify-center text-2xl font-bold">
+                    ${s.name.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800">${s.name}</h3>
+                    <p class="text-sm text-slate-500">NIS: ${s.nis} | ${s.gender === 'L' ? 'Laki-laki' : 'Perempuan'}</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3 text-sm">
+                <div class="bg-slate-50 rounded-xl p-3"><p class="text-slate-500 text-xs">Tempat, Tgl Lahir</p><p class="font-medium">${s.birthPlace || '-'}, ${s.birthDate || '-'}</p></div>
+                <div class="bg-slate-50 rounded-xl p-3"><p class="text-slate-500 text-xs">Orang Tua</p><p class="font-medium">${s.parentName || '-'}</p></div>
+                <div class="bg-slate-50 rounded-xl p-3"><p class="text-slate-500 text-xs">Telepon</p><p class="font-medium">${s.phone || '-'}</p></div>
+                <div class="bg-slate-50 rounded-xl p-3"><p class="text-slate-500 text-xs">Alamat</p><p class="font-medium text-xs">${s.address || '-'}</p></div>
+            </div>
+            <div class="grid grid-cols-3 gap-2 text-center">
+                <div class="bg-green-50 rounded-xl p-3"><p class="text-lg font-bold text-green-600">${totalH}</p><p class="text-xs text-green-700">Hadir</p></div>
+                <div class="bg-yellow-50 rounded-xl p-3"><p class="text-lg font-bold text-yellow-600">${totalS}</p><p class="text-xs text-yellow-700">Sakit</p></div>
+                <div class="bg-red-50 rounded-xl p-3"><p class="text-lg font-bold text-red-600">${totalA}</p><p class="text-xs text-red-700">Alpa</p></div>
+            </div>
+            <div class="bg-primary-50 rounded-xl p-4 text-center">
+                <p class="text-2xl font-bold text-primary-700">${finalGrade || '-'}</p>
+                <p class="text-xs text-primary-600">Nilai Akhir | Kehadiran: ${pct}%</p>
+            </div>
+            <button onclick="hideModal()" class="w-full px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-medium transition">Tutup</button>
+        </div>
+    `);
+}
+
+function showImportModal() {
+    showModal(`
+        <h3 class="text-lg font-bold text-slate-800 mb-4">Import Data Siswa</h3>
+        <p class="text-sm text-slate-500 mb-4">Paste data siswa dengan format (satu siswa per baris, pisahkan dengan tab atau koma):</p>
+        <p class="text-xs text-slate-400 mb-2 bg-slate-50 p-2 rounded-lg">Format: Nama, NIS, L/P, Tempat Lahir, Tgl Lahir, Alamat, Nama Ortu, No HP</p>
+        <textarea id="importData" rows="8" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none resize-none font-mono" placeholder="Ahmad Fauzi, 2024001, L, Lhokseumawe, 2012-05-15, Jl. Merdeka No. 1, Abdullah, 081234567890&#10;Siti Aisyah, 2024002, P, Lhokseumawe, 2012-08-20, Jl. Sudirman No. 5, Mahmud, 081234567891"></textarea>
+        <div class="flex gap-3 mt-4">
+            <button onclick="hideModal()" class="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-medium transition">Batal</button>
+            <button onclick="importStudents()" class="flex-1 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-sm font-medium transition">Import</button>
+        </div>
+    `);
+}
+
+function importStudents() {
+    const text = document.getElementById('importData').value.trim();
+    if (!text) return;
+    
+    const lines = text.split('\n').filter(l => l.trim());
+    let count = 0;
+    
+    lines.forEach(line => {
+        const parts = line.includes('\t') ? line.split('\t') : line.split(',');
+        if (parts.length >= 2) {
+            DB.students.push({
+                id: 'S' + Date.now() + Math.random().toString(36).substr(2, 4),
+                name: (parts[0] || '').trim(),
+                nis: (parts[1] || '').trim(),
+                gender: (parts[2] || 'L').trim().toUpperCase().charAt(0),
+                birthPlace: (parts[3] || '').trim(),
+                birthDate: (parts[4] || '').trim(),
+                address: (parts[5] || '').trim(),
+                parentName: (parts[6] || '').trim(),
+                phone: (parts[7] || '').trim()
+            });
+            count++;
+        }
+    });
+
+    saveData();
+    hideModal();
+    showToast(`${count} siswa berhasil diimport`);
+    renderAll();
+    updateDashboard();
+}
+
+// ==================== ATTENDANCE MODULE ====================
+function renderAttendance() {
+    const date = document.getElementById('attendanceDate').value;
+    const list = document.getElementById('attendanceList');
+    const empty = document.getElementById('attendanceEmpty');
+
+    if (DB.students.length === 0) {
+        list.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+    }
+    empty.classList.add('hidden');
+
+    const dayData = DB.attendance[date] || {};
+
+    list.innerHTML = DB.students.map((s, i) => {
+        const current = dayData[s.id] || '';
+        return `
+        <div class="flex items-center justify-between px-4 lg:px-6 py-3 hover:bg-slate-50 transition">
+            <div class="flex items-center gap-3 flex-1 min-w-0">
+                <span class="text-sm text-slate-400 w-6">${i + 1}</span>
+                <div class="w-8 h-8 rounded-full ${s.gender === 'L' ? 'bg-blue-100 text-blue-600' : 'bg-pink-100 text-pink-600'} flex items-center justify-center text-xs font-bold flex-shrink-0">
+                    ${s.name.charAt(0)}
+                </div>
+                <span class="text-sm font-medium text-slate-800 truncate">${s.name}</span>
+            </div>
+            <div class="flex gap-1.5 flex-shrink-0">
+                ${['H','S','I','A'].map(code => {
+                    const colors = { H: 'bg-green-500', S: 'bg-yellow-500', I: 'bg-blue-500', A: 'bg-red-500' };
+                    const active = current === code;
+                    return `<button onclick="setAttendance('${s.id}','${code}')" class="toggle-btn rounded-xl text-xs font-bold transition ${active ? colors[code] + ' text-white shadow-lg scale-110' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}">${code}</button>`;
+                }).join('')}
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function setAttendance(studentId, code) {
+    const date = document.getElementById('attendanceDate').value;
+    if (!DB.attendance[date]) DB.attendance[date] = {};
+    DB.attendance[date][studentId] = code;
+    renderAttendance();
+}
+
+function markAllPresent() {
+    const date = document.getElementById('attendanceDate').value;
+    if (!DB.attendance[date]) DB.attendance[date] = {};
+    DB.students.forEach(s => {
+        DB.attendance[date][s.id] = 'H';
+    });
+    renderAttendance();
+    showToast('Semua siswa ditandai Hadir');
+}
+
+function saveAttendance() {
+    saveData();
+    showToast('Kehadiran berhasil disimpan');
+    renderAttendanceRecap();
+    updateDashboard();
+}
+
+function renderAttendanceRecap() {
+    const tbody = document.getElementById('attendanceRecapBody');
+    if (DB.students.length === 0) { tbody.innerHTML = ''; return; }
+
+    tbody.innerHTML = DB.students.map(s => {
+        let h = 0, sk = 0, iz = 0, a = 0;
+        Object.values(DB.attendance).forEach(day => {
+            if (day[s.id] === 'H') h++;
+            if (day[s.id] === 'S') sk++;
+            if (day[s.id] === 'I') iz++;
+            if (day[s.id] === 'A') a++;
+        });
+        const total = h + sk + iz + a;
+        const pct = total > 0 ? Math.round((h / total) * 100) : 0;
+        const pctColor = pct >= 90 ? 'text-green-600' : pct >= 75 ? 'text-yellow-600' : 'text-red-600';
+
+        return `<tr class="hover:bg-slate-50">
+            <td class="px-4 py-3 text-sm font-medium text-slate-800">${s.name}</td>
+            <td class="px-4 py-3 text-center text-sm font-medium text-green-600">${h}</td>
+            <td class="px-4 py-3 text-center text-sm font-medium text-yellow-600">${sk}</td>
+            <td class="px-4 py-3 text-center text-sm font-medium text-blue-600">${iz}</td>
+            <td class="px-4 py-3 text-center text-sm font-medium text-red-600">${a}</td>
+            <td class="px-4 py-3 text-center text-sm font-bold ${pctColor}">${pct}%</td>
+        </tr>`;
+    }).join('');
+}
+
+// ==================== GRADES MODULE ====================
+function renderGrades() {
+    const studentId = document.getElementById('gradeStudent').value;
+    const list = document.getElementById('gradesList');
+    const empty = document.getElementById('gradesEmpty');
+
+    if (!studentId) {
+        list.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+    }
+    empty.classList.add('hidden');
+
+    const g = DB.grades[studentId] || { tugas: '', uts: '', uas: '' };
+    const s = DB.students.find(st => st.id === studentId);
+
+    list.innerHTML = `
+        <div class="max-w-lg mx-auto space-y-6">
+            <div class="text-center mb-4">
+                <div class="w-12 h-12 rounded-full ${s.gender === 'L' ? 'bg-blue-100 text-blue-600' : 'bg-pink-100 text-pink-600'} flex items-center justify-center text-lg font-bold mx-auto mb-2">
+                    ${s.name.charAt(0)}
+                </div>
+                <h4 class="font-semibold text-slate-800">${s.name}</h4>
+                <p class="text-xs text-slate-500">NIS: ${s.nis}</p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Nilai Tugas <span class="text-xs text-slate-400">(Bobot: ${DB.settings.weightTask}%)</span></label>
+                    <input type="number" id="gTugas" min="0" max="100" value="${g.tugas}" oninput="updateGradePreview()" class="w-full px-4 py-3 border border-slate-200 rounded-xl text-lg font-medium text-center focus:ring-2 focus:ring-primary-500 outline-none" placeholder="0-100">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Nilai UTS <span class="text-xs text-slate-400">(Bobot: ${DB.settings.weightUTS}%)</span></label>
+                    <input type="number" id="gUTS" min="0" max="100" value="${g.uts}" oninput="updateGradePreview()" class="w-full px-4 py-3 border border-slate-200 rounded-xl text-lg font-medium text-center focus:ring-2 focus:ring-primary-500 outline-none" placeholder="0-100">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Nilai UAS <span class="text-xs text-slate-400">(Bobot: ${DB.settings.weightUAS}%)</span></label>
+                    <input type="number" id="gUAS" min="0" max="100" value="${g.uas}" oninput="updateGradePreview()" class="w-full px-4 py-3 border border-slate-200 rounded-xl text-lg font-medium text-center focus:ring-2 focus:ring-primary-500 outline-none" placeholder="0-100">
+                </div>
+            </div>
+            <div id="gradePreview" class="bg-slate-50 rounded-xl p-4 text-center"></div>
+        </div>
+    `;
+    updateGradePreview();
+}
+
+function updateGradePreview() {
+    const tugas = parseFloat(document.getElementById('gTugas')?.value) || 0;
+    const uts = parseFloat(document.getElementById('gUTS')?.value) || 0;
+    const uas = parseFloat(document.getElementById('gUAS')?.value) || 0;
+    
+    const final = (tugas * DB.settings.weightTask + uts * DB.settings.weightUTS + uas * DB.settings.weightUAS) / 100;
+    const kkm = DB.settings.kkm;
+    const passed = final >= kkm;
+
+    document.getElementById('gradePreview').innerHTML = `
+        <p class="text-sm text-slate-500">Nilai Akhir (Weighted)</p>
+        <p class="text-3xl font-bold ${passed ? 'text-green-600' : 'text-red-600'} mt-1">${final.toFixed(1)}</p>
+        <p class="text-xs mt-1 ${passed ? 'text-green-600' : 'text-red-600'}">${passed ? '✓ Tuntas (≥ KKM ' + kkm + ')' : '✕ Belum Tuntas (KKM: ' + kkm + ')'}</p>
+    `;
+}
+
+function saveGrades() {
+    const studentId = document.getElementById('gradeStudent').value;
+    if (!studentId) return;
+
+    DB.grades[studentId] = {
+        tugas: parseFloat(document.getElementById('gTugas').value) || 0,
+        uts: parseFloat(document.getElementById('gUTS').value) || 0,
+        uas: parseFloat(document.getElementById('gUAS').value) || 0
+    };
+
+    saveData();
+    showToast('Nilai berhasil disimpan');
+    renderGradesRecap();
+    updateDashboard();
+}
+
+function calculateFinalGrade(g) {
+    if (!g || (!g.tugas && !g.uts && !g.uas)) return 0;
+    return ((g.tugas || 0) * DB.settings.weightTask + (g.uts || 0) * DB.settings.weightUTS + (g.uas || 0) * DB.settings.weightUAS) / 100;
+}
+
+function renderGradesRecap() {
+    const tbody = document.getElementById('gradesRecapBody');
+    if (DB.students.length === 0) { tbody.innerHTML = ''; return; }
+
+    tbody.innerHTML = DB.students.map(s => {
+        const g = DB.grades[s.id] || {};
+        const final = calculateFinalGrade(g);
+        const kkm = DB.settings.kkm;
+        const passed = final >= kkm && final > 0;
+
+        return `<tr class="hover:bg-slate-50">
+            <td class="px-4 py-3 text-sm font-medium text-slate-800">${s.name}</td>
+            <td class="px-4 py-3 text-center text-sm">${g.tugas || '-'}</td>
+            <td class="px-4 py-3 text-center text-sm">${g.uts || '-'}</td>
+            <td class="px-4 py-3 text-center text-sm">${g.uas || '-'}</td>
+            <td class="px-4 py-3 text-center text-sm font-bold ${final > 0 ? (passed ? 'text-green-600' : 'text-red-600') : 'text-slate-400'}">${final > 0 ? final.toFixed(1) : '-'}</td>
+            <td class="px-4 py-3 text-center">
+                ${final > 0 ? `<span class="inline-flex px-2 py-1 rounded-full text-xs font-medium ${passed ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${passed ? 'Tuntas' : 'Belum'}</span>` : '<span class="text-xs text-slate-400">-</span>'}
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+// ==================== BEHAVIOR MODULE ====================
+function showBehaviorForm() {
+    if (DB.students.length === 0) {
+        showToast('Tambahkan data siswa terlebih dahulu', 'warning');
+        return;
+    }
+
+    const studentOptions = DB.students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+
+    showModal(`
+        <h3 class="text-lg font-bold text-slate-800 mb-4">Tambah Catatan Perilaku</h3>
+        <form onsubmit="saveBehavior(event)" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Siswa *</label>
+                <select id="bStudent" required class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                    <option value="">Pilih Siswa</option>
+                    ${studentOptions}
+                </select>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Kategori *</label>
+                    <select id="bCategory" required class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                        <option value="prestasi">Prestasi</option>
+                        <option value="pelanggaran">Pelanggaran</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Tingkat</label>
+                    <select id="bLevel" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                        <option value="Ringan">Ringan</option>
+                        <option value="Sedang">Sedang</option>
+                        <option value="Berat">Berat</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Tanggal</label>
+                <input type="date" id="bDate" value="${new Date().toISOString().split('T')[0]}" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Deskripsi *</label>
+                <textarea id="bDesc" required rows="3" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none resize-none" placeholder="Jelaskan kejadian..."></textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Status Tindak Lanjut</label>
+                <select id="bStatus" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                    <option value="Belum">Belum Ditangani</option>
+                    <option value="Sedang">Sedang Ditangani</option>
+                    <option value="Selesai">Selesai Ditangani</option>
+                </select>
+            </div>
+            <div class="flex gap-3 pt-2">
+                <button type="button" onclick="hideModal()" class="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-medium transition">Batal</button>
+                <button type="submit" class="flex-1 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-sm font-medium transition">Simpan</button>
+            </div>
+        </form>
+    `);
+}
+
+function saveBehavior(e) {
+    e.preventDefault();
+    DB.behavior.push({
+        id: 'B' + Date.now(),
+        studentId: document.getElementById('bStudent').value,
+        category: document.getElementById('bCategory').value,
+        level: document.getElementById('bLevel').value,
+        date: document.getElementById('bDate').value,
+        description: document.getElementById('bDesc').value.trim(),
+        status: document.getElementById('bStatus').value
+    });
+    saveData();
+    hideModal();
+    showToast('Catatan perilaku berhasil ditambahkan');
+    renderBehavior();
+    updateDashboard();
+}
+
+function renderBehavior() {
+    const filter = document.getElementById('behaviorFilter').value;
+    const levelFilter = document.getElementById('behaviorLevel').value;
+    const list = document.getElementById('behaviorList');
+    const empty = document.getElementById('behaviorEmpty');
+
+    let filtered = DB.behavior.filter(b => {
+        const matchCat = !filter || b.category === filter;
+        const matchLevel = !levelFilter || b.level === levelFilter;
+        return matchCat && matchLevel;
+    });
+
+    filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    if (filtered.length === 0) {
+        list.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+    }
+    empty.classList.add('hidden');
+
+    list.innerHTML = filtered.map(b => {
+        const student = DB.students.find(s => s.id === b.studentId);
+        const isPrestasi = b.category === 'prestasi';
+        const levelColors = { Ringan: 'bg-yellow-100 text-yellow-700', Sedang: 'bg-orange-100 text-orange-700', Berat: 'bg-red-100 text-red-700' };
+        const statusColors = { Belum: 'bg-red-100 text-red-700', Sedang: 'bg-yellow-100 text-yellow-700', Selesai: 'bg-green-100 text-green-700' };
+
+        return `
+        <div class="px-4 lg:px-6 py-4 hover:bg-slate-50 transition">
+            <div class="flex items-start justify-between gap-4">
+                <div class="flex items-start gap-3 flex-1 min-w-0">
+                    <div class="w-10 h-10 rounded-full ${isPrestasi ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'} flex items-center justify-center flex-shrink-0 mt-1">
+                        ${isPrestasi ? '🏆' : '⚠️'}
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-sm font-medium text-slate-800">${student?.name || 'Siswa tidak ditemukan'}</p>
+                        <p class="text-sm text-slate-600 mt-0.5">${b.description}</p>
+                        <div class="flex flex-wrap gap-2 mt-2">
+                            <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${isPrestasi ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${b.category}</span>
+                            <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${levelColors[b.level]}">${b.level}</span>
+                            <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${statusColors[b.status]}">${b.status}</span>
+                            <span class="text-xs text-slate-400">${b.date}</span>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="deleteBehavior('${b.id}')" class="p-2 hover:bg-red-50 rounded-lg transition flex-shrink-0">
+                    <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function deleteBehavior(id) {
+    DB.behavior = DB.behavior.filter(b => b.id !== id);
+    saveData();
+    showToast('Catatan dihapus', 'info');
+    renderBehavior();
+    updateDashboard();
+}
+
+// ==================== SETTINGS MODULE ====================
+function loadSettings() {
+    const s = DB.settings;
+    document.getElementById('setClassName').value = s.className || '';
+    document.getElementById('setTeacherName').value = s.teacherName || '';
+    document.getElementById('setTeacherNIP').value = s.teacherNIP || '';
+    document.getElementById('setSubject').value = s.subject || '';
+    document.getElementById('setAcademicYear').value = s.academicYear || '';
+    document.getElementById('setSemester').value = s.semester || '';
+    document.getElementById('setKKM').value = s.kkm || '';
+    document.getElementById('setHeadName').value = s.headName || '';
+    document.getElementById('setHeadNIP').value = s.headNIP || '';
+    document.getElementById('setAddress').value = s.address || '';
+    document.getElementById('setWeightTask').value = s.weightTask || '';
+    document.getElementById('setWeightUTS').value = s.weightUTS || '';
+    document.getElementById('setWeightUAS').value = s.weightUAS || '';
+    document.getElementById('setWebAppURL').value = s.webAppURL || '';
+    updateWeightTotal();
+    renderAnnouncements();
+}
+
+function saveSettings() {
+    DB.settings.className = document.getElementById('setClassName').value.trim();
+    DB.settings.teacherName = document.getElementById('setTeacherName').value.trim();
+    DB.settings.teacherNIP = document.getElementById('setTeacherNIP').value.trim();
+    DB.settings.subject = document.getElementById('setSubject').value.trim();
+    DB.settings.academicYear = document.getElementById('setAcademicYear').value.trim();
+    DB.settings.semester = document.getElementById('setSemester').value;
+    DB.settings.kkm = parseInt(document.getElementById('setKKM').value) || 75;
+    DB.settings.headName = document.getElementById('setHeadName').value.trim();
+    DB.settings.headNIP = document.getElementById('setHeadNIP').value.trim();
+    DB.settings.address = document.getElementById('setAddress').value.trim();
+    DB.settings.weightTask = parseInt(document.getElementById('setWeightTask').value) || 40;
+    DB.settings.weightUTS = parseInt(document.getElementById('setWeightUTS').value) || 30;
+    DB.settings.weightUAS = parseInt(document.getElementById('setWeightUAS').value) || 30;
+    DB.settings.webAppURL = document.getElementById('setWebAppURL').value.trim();
+
+    saveData();
+    showToast('Pengaturan berhasil disimpan');
+    updateSyncStatus();
+    renderGradesRecap();
+}
+
+function updateWeightTotal() {
+    const t = parseInt(document.getElementById('setWeightTask').value) || 0;
+    const u = parseInt(document.getElementById('setWeightUTS').value) || 0;
+    const a = parseInt(document.getElementById('setWeightUAS').value) || 0;
+    const total = t + u + a;
+    const el = document.getElementById('weightTotal');
+    if (total === 100) {
+        el.innerHTML = `<span class="text-green-600">✓ Total: ${total}% (Valid)</span>`;
+    } else {
+        el.innerHTML = `<span class="text-red-600">⚠ Total: ${total}% (Harus 100%)</span>`;
+    }
+}
+
+// Weight input listeners
+['setWeightTask', 'setWeightUTS', 'setWeightUAS'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', updateWeightTotal);
+});
+
+function addAnnouncement() {
+    const input = document.getElementById('newAnnouncement');
+    const text = input.value.trim();
+    if (!text) return;
+    DB.settings.announcements.push({ id: Date.now(), text, date: new Date().toISOString().split('T')[0] });
+    input.value = '';
+    saveData();
+    renderAnnouncements();
+    renderDashboardAnnouncements();
+    showToast('Pengumuman ditambahkan');
+}
+
+function renderAnnouncements() {
+    const container = document.getElementById('settingsAnnouncements');
+    if (!DB.settings.announcements?.length) {
+        container.innerHTML = '<p class="text-sm text-slate-400 italic">Belum ada pengumuman</p>';
+        return;
+    }
+    container.innerHTML = DB.settings.announcements.map(a => `
+        <div class="flex items-center justify-between bg-slate-50 rounded-xl px-4 py-2">
+            <div class="flex-1 min-w-0">
+                <p class="text-sm text-slate-700 truncate">${a.text}</p>
+                <p class="text-xs text-slate-400">${a.date}</p>
+            </div>
+            <button onclick="deleteAnnouncement(${a.id})" class="p-1.5 hover:bg-red-50 rounded-lg transition ml-2">
+                <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+    `).join('');
+}
+
+function deleteAnnouncement(id) {
+    DB.settings.announcements = DB.settings.announcements.filter(a => a.id !== id);
+    saveData();
+    renderAnnouncements();
+    renderDashboardAnnouncements();
+}
+
+function renderDashboardAnnouncements() {
+    const container = document.getElementById('announcementsList');
+    const ann = DB.settings.announcements || [];
+    if (!ann.length) {
+        container.innerHTML = '<p class="text-sm text-slate-500 italic">Belum ada pengumuman. Tambahkan di menu Pengaturan.</p>';
+        return;
+    }
+    container.innerHTML = ann.slice(0, 5).map(a => `
+        <div class="flex items-start gap-3 bg-primary-50 rounded-xl p-3">
+            <span class="text-primary-500 mt-0.5">📌</span>
+            <div>
+                <p class="text-sm text-slate-700">${a.text}</p>
+                <p class="text-xs text-slate-400 mt-1">${a.date}</p>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ==================== GOOGLE SHEETS SYNC ====================
+function updateSyncStatus() {
+    const el = document.getElementById('syncStatus');
+    if (DB.settings.webAppURL) {
+        el.innerHTML = `<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span><span>Connected</span>`;
+        el.className = 'hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-50 text-xs font-medium text-green-700';
+    } else {
+        el.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-400"></span><span>Offline Mode</span>`;
+        el.className = 'hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 text-xs font-medium text-slate-600';
+    }
+}
+
+async function syncToGoogleSheets() {
+    const url = DB.settings.webAppURL;
+    if (!url) {
+        showToast('URL Google Apps Script belum diatur', 'warning');
+        return;
+    }
+
+    const result = document.getElementById('syncResult');
+    result.className = 'text-sm p-3 rounded-xl bg-blue-50 text-blue-700';
+    result.textContent = '⏳ Sedang menyinkronkan...';
+    result.classList.remove('hidden');
+
+    try {
+        // Sync Students
+        const studentRows = DB.students.map(s => [s.id, s.name, s.nis, s.gender, s.birthPlace, s.birthDate, s.address, s.parentName, s.phone]);
+        await fetch(url, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                sheet: 'DataSiswa',
+                action: 'overwrite',
+                headers: ['ID', 'Nama', 'NIS', 'Gender', 'Tempat Lahir', 'Tgl Lahir', 'Alamat', 'Orang Tua', 'Telepon'],
+                rows: studentRows
+            })
+        });
+
+        // Sync Attendance
+        const attRows = [];
+        Object.entries(DB.attendance).forEach(([date, data]) => {
+            Object.entries(data).forEach(([studentId, status]) => {
+                const student = DB.students.find(s => s.id === studentId);
+                attRows.push([date, studentId, student?.name || '', status]);
+            });
+        });
+        await fetch(url, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                sheet: 'Kehadiran',
+                action: 'overwrite',
+                headers: ['Tanggal', 'ID Siswa', 'Nama Siswa', 'Status'],
+                rows: attRows
+            })
+        });
+
+        // Sync Grades
+        const gradeRows = DB.students.map(s => {
+            const g = DB.grades[s.id] || {};
+            const final = calculateFinalGrade(g);
+            return [s.id, s.name, g.tugas || '', g.uts || '', g.uas || '', final.toFixed(1)];
+        });
+        await fetch(url, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                sheet: 'Nilai',
+                action: 'overwrite',
+                headers: ['ID', 'Nama', 'Tugas', 'UTS', 'UAS', 'Nilai Akhir'],
+                rows: gradeRows
+            })
+        });
+
+        result.className = 'text-sm p-3 rounded-xl bg-green-50 text-green-700';
+        result.textContent = '✅ Berhasil sinkron ke Google Sheets!';
+        showToast('Data berhasil disinkronkan ke Google Sheets');
+    } catch (err) {
+        result.className = 'text-sm p-3 rounded-xl bg-red-50 text-red-700';
+        result.textContent = '❌ Gagal sinkron: ' + err.message;
+        showToast('Gagal sinkronisasi. Periksa koneksi dan URL.', 'error');
+    }
+}
+
+// ==================== DASHBOARD ====================
+function updateDashboard() {
+    // Total students
+    document.getElementById('statTotalStudents').textContent = DB.students.length;
+
+    // Attendance today
+    const today = new Date().toISOString().split('T')[0];
+    const todayAtt = DB.attendance[today] || {};
+    const presentToday = Object.values(todayAtt).filter(v => v === 'H').length;
+    const totalToday = Object.keys(todayAtt).length;
+    const pctToday = totalToday > 0 ? Math.round((presentToday / DB.students.length) * 100) : 0;
+    document.getElementById('statAttendance').textContent = totalToday > 0 ? pctToday + '%' : '-';
+
+    // Average grade
+    const gradeValues = DB.students.map(s => calculateFinalGrade(DB.grades[s.id] || {})).filter(v => v > 0);
+    const avg = gradeValues.length > 0 ? (gradeValues.reduce((a, b) => a + b, 0) / gradeValues.length).toFixed(1) : '-';
+    document.getElementById('statAvgGrade').textContent = avg;
+
+    // Active cases
+    const activeCases = DB.behavior.filter(b => b.status !== 'Selesai').length;
+    document.getElementById('statActiveCases').textContent = activeCases;
+
+    renderDashboardAnnouncements();
+    updateCharts();
+}
+
+// ==================== CHARTS ====================
+let chartAttendance, chartGrades;
+
+function initCharts() {
+    const ctxAtt = document.getElementById('chartAttendance').getContext('2d');
+    chartAttendance = new Chart(ctxAtt, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: '% Kehadiran',
+                data: [],
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16,185,129,0.1)',
+                fill: true,
+                tension: 0.4,
+                pointRadius: 4,
+                pointBackgroundColor: '#10b981'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } }
+            }
+        }
+    });
+
+    const ctxGr = document.getElementById('chartGrades').getContext('2d');
+    chartGrades = new Chart(ctxGr, {
+        type: 'doughnut',
+        data: {
+            labels: ['Tuntas', 'Belum Tuntas', 'Belum Dinilai'],
+            datasets: [{
+                data: [0, 0, 0],
+                backgroundColor: ['#10b981', '#ef4444', '#94a3b8'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom', labels: { padding: 15, usePointStyle: true } }
+            }
+        }
+    });
+
+    updateCharts();
+}
+
+function updateCharts() {
+    // Attendance chart - last 7 days
+    const dates = [];
+    const pcts = [];
+    for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const ds = d.toISOString().split('T')[0];
+        dates.push(d.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric' }));
+        const dayAtt = DB.attendance[ds] || {};
+        const present = Object.values(dayAtt).filter(v => v === 'H').length;
+        const total = DB.students.length;
+        pcts.push(total > 0 ? Math.round((present / total) * 100) : 0);
+    }
+    chartAttendance.data.labels = dates;
+    chartAttendance.data.datasets[0].data = pcts;
+    chartAttendance.update();
+
+    // Grades chart
+    let tuntas = 0, belum = 0, belumNilai = 0;
+    DB.students.forEach(s => {
+        const g = DB.grades[s.id];
+        const final = calculateFinalGrade(g || {});
+        if (final > 0) {
+            if (final >= DB.settings.kkm) tuntas++;
+            else belum++;
+        } else {
+            belumNilai++;
+        }
+    });
+    chartGrades.data.datasets[0].data = [tuntas, belum, belumNilai];
+    chartGrades.update();
+}
+
+// ==================== EXPORT FUNCTIONS ====================
+function exportStudentsExcel() {
+    if (DB.students.length === 0) { showToast('Tidak ada data siswa', 'warning'); return; }
+    
+    const data = DB.students.map((s, i) => ({
+        'No': i + 1,
+        'NIS': s.nis,
+        'Nama Lengkap': s.name,
+        'L/P': s.gender,
+        'Tempat Lahir': s.birthPlace || '',
+        'Tanggal Lahir': s.birthDate || '',
+        'Alamat': s.address || '',
+        'Nama Orang Tua': s.parentName || '',
+        'No. Telepon': s.phone || ''
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Data Siswa');
+    XLSX.writeFile(wb, `Data_Siswa_${DB.settings.className || 'MTsN1'}_${new Date().toISOString().split('T')[0]}.xlsx`);
+    showToast('File Excel berhasil didownload');
+}
+
+function exportAttendanceExcel() {
+    if (DB.students.length === 0) { showToast('Tidak ada data', 'warning'); return; }
+
+    const data = DB.students.map((s, i) => {
+        let h = 0, sk = 0, iz = 0, a = 0;
+        Object.values(DB.attendance).forEach(day => {
+            if (day[s.id] === 'H') h++;
+            if (day[s.id] === 'S') sk++;
+            if (day[s.id] === 'I') iz++;
+            if (day[s.id] === 'A') a++;
+        });
+        const total = h + sk + iz + a;
+        return {
+            'No': i + 1,
+            'NIS': s.nis,
+            'Nama': s.name,
+            'Hadir': h,
+            'Sakit': sk,
+            'Izin': iz,
+            'Alpa': a,
+            'Total Pertemuan': total,
+            '% Kehadiran': total > 0 ? Math.round((h / total) * 100) + '%' : '0%'
+        };
+    });
+
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Rekap Kehadiran');
+    XLSX.writeFile(wb, `Rekap_Kehadiran_${DB.settings.className || 'MTsN1'}_${new Date().toISOString().split('T')[0]}.xlsx`);
+    showToast('File Excel berhasil didownload');
+}
+
+function exportGradesExcel() {
+    if (DB.students.length === 0) { showToast('Tidak ada data', 'warning'); return; }
+
+    const data = DB.students.map((s, i) => {
+        const g = DB.grades[s.id] || {};
+        const final = calculateFinalGrade(g);
+        return {
+            'No': i + 1,
+            'NIS': s.nis,
+            'Nama': s.name,
+            'Tugas': g.tugas || '',
+            'UTS': g.uts || '',
+            'UAS': g.uas || '',
+            'Nilai Akhir': final > 0 ? final.toFixed(1) : '',
+            'KKM': DB.settings.kkm,
+            'Status': final >= DB.settings.kkm && final > 0 ? 'Tuntas' : (final > 0 ? 'Belum Tuntas' : '')
+        };
+    });
+
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Rekap Nilai');
+    XLSX.writeFile(wb, `Rekap_Nilai_${DB.settings.className || 'MTsN1'}_${new Date().toISOString().split('T')[0]}.xlsx`);
+    showToast('File Excel berhasil didownload');
+}
+
+function exportAllCSV() {
+    let csv = 'DATA SISWA\n';
+    csv += 'No,NIS,Nama,Gender,Tempat Lahir,Tgl Lahir,Alamat,Orang Tua,Telepon\n';
+    DB.students.forEach((s, i) => {
+        csv += `${i+1},${s.nis},"${s.name}",${s.gender},"${s.birthPlace||''}","${s.birthDate||''}","${s.address||''}","${s.parentName||''}","${s.phone||''}"\n`;
+    });
+    csv += '\nREKAP KEHADIRAN\n';
+    csv += 'NIS,Nama,Hadir,Sakit,Izin,Alpa\n';
+    DB.students.forEach(s => {
+        let h=0,sk=0,iz=0,a=0;
+        Object.values(DB.attendance).forEach(day => {
+            if(day[s.id]==='H') h++;
+            if(day[s.id]==='S') sk++;
+            if(day[s.id]==='I') iz++;
+            if(day[s.id]==='A') a++;
+        });
+        csv += `${s.nis},"${s.name}",${h},${sk},${iz},${a}\n`;
+    });
+    csv += '\nREKAP NILAI\n';
+    csv += 'NIS,Nama,Tugas,UTS,UAS,Nilai Akhir,Status\n';
+    DB.students.forEach(s => {
+        const g = DB.grades[s.id] || {};
+        const f = calculateFinalGrade(g);
+        csv += `${s.nis},"${s.name}",${g.tugas||''},${g.uts||''},${g.uas||''},${f>0?f.toFixed(1):''},${f>=DB.settings.kkm&&f>0?'Tuntas':(f>0?'Belum':'')}\n`;
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Data_Lengkap_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    showToast('File CSV berhasil didownload');
+}
+
+function backupData() {
+    const data = JSON.stringify(DB, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `Backup_ADM_Guru_${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    showToast('Backup berhasil didownload');
+}
+
+function showPrintReportModal() {
+    if (DB.students.length === 0) { showToast('Tidak ada data siswa', 'warning'); return; }
+
+    const options = DB.students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+    showModal(`
+        <h3 class="text-lg font-bold text-slate-800 mb-4">Cetak Rapor Bayangan</h3>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Pilih Siswa</label>
+                <select id="printStudent" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                    <option value="">-- Semua Siswa --</option>
+                    ${options}
+                </select>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="hideModal()" class="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-sm font-medium transition">Batal</button>
+                <button onclick="generatePrintReport()" class="flex-1 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl text-sm font-medium transition">🖨️ Cetak</button>
+            </div>
+        </div>
+    `);
+}
+
+function generatePrintReport() {
+    const studentId = document.getElementById('printStudent').value;
+    const students = studentId ? DB.students.filter(s => s.id === studentId) : DB.students;
+    const s = DB.settings;
+
+    let html = `
+        <div style="font-family: 'Inter', sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;">
+            <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px double #333; padding-bottom: 15px;">
+                <h2 style="margin: 0; font-size: 18px;">MTsN 1 KOTA LHOKSEUMAWE</h2>
+                <p style="margin: 5px 0; font-size: 12px; color: #666;">${s.address || 'Alamat Madrasah'}</p>
+                <h3 style="margin: 15px 0 5px; font-size: 16px;">RINGKASAN HASIL BELAJAR SISWA</h3>
+                <p style="margin: 0; font-size: 12px;">Tahun Ajaran ${s.academicYear} - Semester ${s.semester}</p>
+            </div>
+            <div style="margin-bottom: 20px; font-size: 12px;">
+                <table style="width: 50%;">
+                    <tr><td style="padding: 3px 10px;">Kelas</td><td style="padding: 3px 10px;">: ${s.className || '-'}</td></tr>
+                    <tr><td style="padding: 3px 10px;">Mata Pelajaran</td><td style="padding: 3px 10px;">: ${s.subject || '-'}</td></tr>
+                    <tr><td style="padding: 3px 10px;">Guru Mapel</td><td style="padding: 3px 10px;">: ${s.teacherName || '-'}</td></tr>
+                    <tr><td style="padding: 3px 10px;">KKM</td><td style="padding: 3px 10px;">: ${s.kkm}</td></tr>
+                </table>
+            </div>
+    `;
+
+    students.forEach(student => {
+        const g = DB.grades[student.id] || {};
+        const final = calculateFinalGrade(g);
+        let h = 0, sk = 0, iz = 0, a = 0;
+        Object.values(DB.attendance).forEach(day => {
+            if (day[student.id] === 'H') h++;
+            if (day[student.id] === 'S') sk++;
+            if (day[student.id] === 'I') iz++;
+            if (day[student.id] === 'A') a++;
+        });
+
+        html += `
+            <div style="margin-bottom: 30px; page-break-inside: avoid; border: 1px solid #ddd; border-radius: 8px; padding: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; background: #f0fdf4; padding: 10px; border-radius: 6px;">
+                    <div>
+                        <strong style="font-size: 14px;">${student.name}</strong>
+                        <span style="font-size: 11px; color: #666; margin-left: 10px;">NIS: ${student.nis}</span>
+                    </div>
+                    <span style="font-size: 11px; color: #666;">${student.gender === 'L' ? 'Laki-laki' : 'Perempuan'}</span>
+                </div>
+                <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 10px;">
+                    <thead>
+                        <tr style="background: #f8fafc;">
+                            <th style="border: 1px solid #e2e8f0; padding: 8px; text-align: center;">Tugas</th>
+                            <th style="border: 1px solid #e2e8f0; padding: 8px; text-align: center;">UTS</th>
+                            <th style="border: 1px solid #e2e8f0; padding: 8px; text-align: center;">UAS</th>
+                            <th style="border: 1px solid #e2e8f0; padding: 8px; text-align: center;">Nilai Akhir</th>
+                            <th style="border: 1px solid #e2e8f0; padding: 8px; text-align: center;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="border: 1px solid #e2e8f0; padding: 8px; text-align: center;">${g.tugas || '-'}</td>
+                            <td style="border: 1px solid #e2e8f0; padding: 8px; text-align: center;">${g.uts || '-'}</td>
+                            <td style="border: 1px solid #e2e8f0; padding: 8px; text-align: center;">${g.uas || '-'}</td>
+                            <td style="border: 1px solid #e2e8f0; padding: 8px; text-align: center; font-weight: bold; color: ${final >= s.kkm ? 'green' : 'red'};">${final > 0 ? final.toFixed(1) : '-'}</td>
+                            <td style="border: 1px solid #e2e8f0; padding: 8px; text-align: center;">${final >= s.kkm && final > 0 ? 'Tuntas' : (final > 0 ? 'Belum Tuntas' : '-')}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div style="font-size: 11px; color: #666;">
+                    Kehadiran: Hadir(${h}) Sakit(${sk}) Izin(${iz}) Alpa(${a})
+                </div>
+            </div>
+        `;
+    });
+
+    html += `
+            <div style="margin-top: 40px; display: flex; justify-content: flex-end;">
+                <div style="text-align: center; font-size: 12px;">
+                    <p>Lhokseumawe, ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                    <p>Guru Mata Pelajaran</p>
+                    <br><br><br>
+                    <p style="font-weight: bold; text-decoration: underline;">${s.teacherName || '...................'}</p>
+                    <p>NIP. ${s.teacherNIP || '...................'}</p>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`<!DOCTYPE html><html><head><title>Rapor Bayangan</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"><style>body{margin:0;padding:20px;font-family:'Inter',sans-serif;} @media print { body { padding: 0; } }</style></head><body>${html}</body></html>`);
+    printWindow.document.close();
+    setTimeout(() => printWindow.print(), 500);
+    hideModal();
+}
+
+// ==================== RENDER ALL ====================
+function renderAll() {
+    renderStudents();
+    renderAttendance();
+    renderAttendanceRecap();
+    populateStudentSelects();
+    renderGradesRecap();
+    renderBehavior();
+    loadSettings();
+}
+
+function populateStudentSelects() {
+    const options = DB.students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+    document.getElementById('gradeStudent').innerHTML = '<option value="">Pilih Siswa</option>' + options;
+}
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', init);
+
+// Date change listener
+document.getElementById('attendanceDate').addEventListener('change', renderAttendance);
+</script>
+
+</body>
+</html>
